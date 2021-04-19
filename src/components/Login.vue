@@ -33,8 +33,8 @@
             return {
                 /* 这是登录表单的数据绑定对象 */
                 loginForm: {
-                    username:'',
-                    password:''
+                    username:'admin',
+                    password:'123456'
                 },
                 // 这是表单验证规则对象
                 loginFormRules: {
@@ -57,8 +57,34 @@
                 this.$refs.loginFormRef.resetFields();
             },
             login () {
-                this.$refs.loginFormRef.validate((valid) => {
-                    console.log(valid);
+                this.$refs.loginFormRef.validate( async valid => {
+
+                    // 判断valid是否为false，等于false返回请求
+                    if (!valid) return;
+
+                    // 验证通过判断为ture，执行网络请求
+                    // 结构赋值res
+                    const {data:res} = await this.$http.post('login',this.loginForm);
+
+                    //判断返回值是否是200（是否登录成功）
+                    if (res.meta.status !== 200){
+                        // 登录失败后返回错误提示
+                        this.$message.error('用户名或者是密码错误')
+                    }
+
+                    // 登录成功后返回提示
+                    this.$message.success('登陆成功')
+
+                    //1.将登录成功后的token，保存到客户端的sessionStorage中
+                    // 1.1项目中除了登录之外的接口，必须在登录之后才能访问
+                    // 1.2token只应在当前网站打开期间生效，所以token保存在sessionStorage中
+                    console.log(res);
+
+                    //将token保存到sessionStorage中
+                    window.sessionStorage.setItem('token',res.data.token);
+
+                    //2.通过编程式导航跳转到后台主页，路由地址是/home
+                    this.$router.push('/home')
                 })
             }
         }
