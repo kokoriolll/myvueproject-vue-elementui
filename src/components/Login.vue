@@ -78,7 +78,7 @@
                     //1.将登录成功后的token，保存到客户端的sessionStorage中
                     // 1.1项目中除了登录之外的接口，必须在登录之后才能访问
                     // 1.2token只应在当前网站打开期间生效，所以token保存在sessionStorage中
-                    console.log(res);
+                    //console.log(res);
 
                     //将token保存到sessionStorage中
                     window.sessionStorage.setItem('token',res.data.token);
