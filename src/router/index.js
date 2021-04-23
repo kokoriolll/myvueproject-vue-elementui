@@ -29,7 +29,7 @@ router.beforeEach((to,from,next)=>{
   // to 将要访问的路径
   // from 代表从那个路径跳转而来
   // next 是一个函数，表示放行
-  //  next()放行 next('/login')强制跳转到登录页面
+  // next()放行 next('/login')强制跳转到登录页面
 
   //如果访问的是登录页面，直接放行
   if (to.path === '/login') return next();
