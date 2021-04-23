@@ -33,7 +33,7 @@
                         </template>
                         <!-- 二级菜单 -->
                         <el-menu-item :index="subItem.id + ''" v-for="subItem in item.children" :key="subItem.id">
-                            <i class="el-icon-menu"></i>
+                            <i :class="subIconObj[subItem.id]"></i>
                             <span>{{subItem.authName}}</span>
                         </el-menu-item>
 
@@ -64,6 +64,17 @@
                     '101': 'el-icon-s-goods',
                     '102': 'el-icon-s-order',
                     '145': 'el-icon-s-marketing'
+                },
+                //二级菜单图标
+                subIconObj: {
+                    '110': 'el-icon-s-custom',
+                    '111': 'el-icon-s-custom',
+                    '112': 'el-icon-s-flag',
+                    '104': 'el-icon-notebook-2',
+                    '115': 'el-icon-s-grid',
+                    '121': 'el-icon-menu',
+                    '107': 'el-icon-s-order',
+                    '146': 'el-icon-s-data'
                 }
             }
         },
@@ -91,7 +102,6 @@
                 }
                 // 获取菜单数据正确，保存到date的menuList数组里
                 this.menuList = res.data;
-
             }
 
         }
