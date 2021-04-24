@@ -15,9 +15,18 @@
         <!-- 页面主体区域 -->
         <el-container>
             <!-- 侧边栏 -->
-            <el-aside width="200px">
+            <!-- 根据是否展开判断，为真使用64px，为假使用200px -->
+            <el-aside :width="isCollapse ? '64px' : '200px'">
+                <!-- 侧边栏展开与折叠按钮 -->
+                <div class="toggle-button" @click="toggleCollapse">
+                    <!-- 根据是否展开判断，使用三目语法判断 -->
+                    <i :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"></i>
+                </div>
                 <!-- 侧边栏菜单区 -->
                 <el-menu
+                        :router="true"
+                        :collapse-transition="false"
+                        :collapse="isCollapse"
                         unique-opened
                         background-color="#ffffff"
                         text-color="#333333"
@@ -32,7 +41,7 @@
                             <span>{{item.authName}}</span>
                         </template>
                         <!-- 二级菜单 -->
-                        <el-menu-item :index="subItem.id + ''" v-for="subItem in item.children" :key="subItem.id">
+                        <el-menu-item :index="'/' + subItem.path + ''" v-for="subItem in item.children" :key="subItem.id">
                             <i :class="subIconObj[subItem.id]"></i>
                             <span>{{subItem.authName}}</span>
                         </el-menu-item>
@@ -41,7 +50,10 @@
                 </el-menu>
             </el-aside>
             <!-- 右侧主体 -->
-            <el-main>Main</el-main>
+            <el-main>
+                <!-- 路由占位符 -->
+                <router-view></router-view>
+            </el-main>
         </el-container>
     </el-container>
 </template>
@@ -75,7 +87,9 @@
                     '121': 'el-icon-menu',
                     '107': 'el-icon-s-order',
                     '146': 'el-icon-s-data'
-                }
+                },
+                //是否展示或折叠菜单
+                isCollapse: false,
             }
         },
         methods: {
@@ -102,6 +116,11 @@
                 }
                 // 获取菜单数据正确，保存到date的menuList数组里
                 this.menuList = res.data;
+            },
+
+            // 点击按钮切换菜单折叠和展开
+            toggleCollapse() {
+                this.isCollapse = !this.isCollapse;
             }
 
         }
@@ -144,6 +163,16 @@
         background: white;
         font-size: 22px;
         color: #409EFF;
+    }
+
+    .toggle-button {
+        background-color: white;
+        border-bottom: 1px solid #e9e9e9;
+        font-size: 18px;
+        color: #333;
+        text-align: center;
+        line-height: 24px;
+        cursor: pointer;
     }
 
     .el-aside {
