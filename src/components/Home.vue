@@ -23,7 +23,10 @@
                     <i :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"></i>
                 </div>
                 <!-- 侧边栏菜单区 -->
+                <!-- 默认使用了路由的当前地址 :default-active="activePath" -->
                 <el-menu
+                        :default-active="this.$route.path"
+
                         :router="true"
                         :collapse-transition="false"
                         :collapse="isCollapse"
@@ -41,7 +44,7 @@
                             <span>{{item.authName}}</span>
                         </template>
                         <!-- 二级菜单 -->
-                        <el-menu-item :index="'/' + subItem.path + ''" v-for="subItem in item.children" :key="subItem.id">
+                        <el-menu-item :index="'/' + subItem.path" v-for="subItem in item.children" :key="subItem.id" @click="saveNavState('/' + subItem.path)">
                             <i :class="subIconObj[subItem.id]"></i>
                             <span>{{subItem.authName}}</span>
                         </el-menu-item>
@@ -60,9 +63,12 @@
 
 <script>
     export default {
-        // 在创建的生命周期执行获取菜单操作
+
         created() {
+            // 在创建的生命周期执行获取菜单操作
             this.getMenuList()
+            // 在创建生命周期函数的时候获取保存的路径并赋值到数据中
+            this.activePath = window.sessionStorage.getItem('activePath')
         },
         name: "home",
         data(){
@@ -90,6 +96,9 @@
                 },
                 //是否展示或折叠菜单
                 isCollapse: false,
+                //被激活的链接地址
+                activePath: '',
+
             }
         },
         methods: {
@@ -121,6 +130,13 @@
             // 点击按钮切换菜单折叠和展开
             toggleCollapse() {
                 this.isCollapse = !this.isCollapse;
+            },
+
+
+            // 保存链接的激活状态
+            saveNavState(activePath) {
+                window.sessionStorage.setItem('activePath',activePath);
+                this.activePath = activePath;
             }
 
         }
