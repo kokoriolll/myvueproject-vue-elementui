@@ -18,6 +18,9 @@ import {
     Card,
     Row,
     Col,
+    Table,
+    TableColumn,
+    Switch,
 } from 'element-ui'
 
 Vue.use(Row)
@@ -37,6 +40,9 @@ Vue.use(MenuItem)
 Vue.use(Breadcrumb)
 Vue.use(BreadcrumbItem)
 Vue.use(Card)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(Switch)
 
 // 导入弹框提示组件
 // 把弹框组件挂载到了Vue原型上 用this.$message 访问
