@@ -58,7 +58,6 @@
             },
             login () {
                 this.$refs.loginFormRef.validate( async valid => {
-
                     // 判断valid是否为false，等于false返回请求
                     if (!valid) return;
 

@@ -22,6 +22,7 @@ import {
     TableColumn,
     Switch,
     Pagination,
+    Dialog,
 } from 'element-ui'
 
 Vue.use(Row)
@@ -45,6 +46,7 @@ Vue.use(Table)
 Vue.use(TableColumn)
 Vue.use(Switch)
 Vue.use(Pagination)
+Vue.use(Dialog)
 
 // 导入弹框提示组件
 // 把弹框组件挂载到了Vue原型上 用this.$message 访问
