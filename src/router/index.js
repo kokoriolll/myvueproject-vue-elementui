@@ -14,20 +14,29 @@ const routes = [
   },
   {
     path: '/login',
-    component: Login
+    component: Login,
   },
   {
     path: '/home',
     component: Home,
     redirect: '/welcome',
+    meta:{
+      title: '首页'
+    },
     children: [
       {
         path: '/welcome',
-        component: Welcome
+        component: Welcome,
+        meta:{
+          title: '欢迎'
+        }
       },
       {
         path: '/users',
-        component: Users
+        component: Users,
+        meta:{
+          title: '用户列表'
+        }
       }
     ]
   }
@@ -53,6 +62,11 @@ router.beforeEach((to,from,next)=>{
   //判断是否获取到了token，没有token返回到登录页面
   if(!tokenStr) return next('/login');
   //判断token存在，直接放行
+
+
+  if (to.meta.title) {
+    document.title = to.meta.title
+  }
   next()
 
 })

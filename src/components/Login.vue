@@ -27,6 +27,8 @@
 </template>
 
 <script>
+    document.title = '登录页面';
+
     export default {
         name: "Login",
         data() {

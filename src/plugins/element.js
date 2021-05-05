@@ -23,6 +23,7 @@ import {
     Switch,
     Pagination,
     Dialog,
+    MessageBox,
 } from 'element-ui'
 
 Vue.use(Row)
@@ -49,5 +50,7 @@ Vue.use(Pagination)
 Vue.use(Dialog)
 
 // 导入弹框提示组件
-// 把弹框组件挂载到了Vue原型上 用this.$message 访问
+// 把消息提示组件挂载到了Vue原型上 用this.$message 访问
 Vue.prototype.$message = Message
+// 把弹框组件挂载到了Vue原型上 用this.$confirm 访问
+Vue.prototype.$confirm = MessageBox.confirm
