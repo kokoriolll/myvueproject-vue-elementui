@@ -26,7 +26,6 @@
                 <!-- 默认使用了路由的当前地址 :default-active="activePath" -->
                 <el-menu
                         :default-active="this.$route.path"
-
                         :router="true"
                         :collapse-transition="false"
                         :collapse="isCollapse"
@@ -98,7 +97,6 @@
                 isCollapse: false,
                 //被激活的链接地址
                 activePath: '',
-
             }
         },
         methods: {
@@ -107,14 +105,11 @@
             logout() {
                 //清空token
                 window.sessionStorage.removeItem('token');
-
                 //也可以直接清空sessionStorage
                 //window.sessionStorage.clear();
-
                 //回到登录页面
                 this.$router.push('/login');
             },
-
             // 获取所有的菜单
             async getMenuList() {
                 // 获取菜单目录
@@ -126,13 +121,10 @@
                 // 获取菜单数据正确，保存到date的menuList数组里
                 this.menuList = res.data;
             },
-
             // 点击按钮切换菜单折叠和展开
             toggleCollapse() {
                 this.isCollapse = !this.isCollapse;
             },
-
-
             // 保存链接的激活状态
             saveNavState(activePath) {
                 window.sessionStorage.setItem('activePath',activePath);
