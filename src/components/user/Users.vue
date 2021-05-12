@@ -271,7 +271,7 @@
                     const {data:res} = await this.$http.post('users',this.addForm);
                     // 添加失败，返回错误提示
                     if (res.meta.status !== 201) {
-                        this.$message.error('添加用户失败')
+                        return this.$message.error('添加用户失败')
                     }
                     // 添加成功，返回成功提示
                     this.$message.success('添加用户成功');
