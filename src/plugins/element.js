@@ -24,7 +24,8 @@ import {
     Pagination,
     Dialog,
     MessageBox,
-    Tag
+    Tag,
+    Icon
 } from 'element-ui'
 
 Vue.use(Row)
@@ -50,6 +51,7 @@ Vue.use(Switch)
 Vue.use(Pagination)
 Vue.use(Dialog)
 Vue.use(Tag)
+Vue.use(Icon)
 
 // 导入弹框提示组件
 // 把消息提示组件挂载到了Vue原型上 用this.$message 访问
