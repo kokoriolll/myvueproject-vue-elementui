@@ -26,7 +26,9 @@ import {
     MessageBox,
     Tag,
     Icon,
-    Tree
+    Tree,
+    Select,
+    Option
 } from 'element-ui'
 
 Vue.use(Row)
@@ -54,6 +56,8 @@ Vue.use(Dialog)
 Vue.use(Tag)
 Vue.use(Icon)
 Vue.use(Tree)
+Vue.use(Select)
+Vue.use(Option)
 
 // 导入弹框提示组件
 // 把消息提示组件挂载到了Vue原型上 用this.$message 访问
