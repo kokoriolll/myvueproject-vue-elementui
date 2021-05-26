@@ -10,6 +10,8 @@ import axios from "axios";
 import './assets/fonts/iconfont.css'
 /* 引入全局样式 */
 import './assets/css/global.css'
+// 导入vueTable组件
+import Treetable from 'vue-table-with-tree-grid'
 
 // 配置请求的根路径
 axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/';
@@ -27,11 +29,11 @@ axios.interceptors.request.use(config =>{
 // 将axios挂载到Vue原型  使用this.$http访问
 Vue.prototype.$http = axios
 
-
-
-
 //阻止启动生产消息
 Vue.config.productionTip = false
+
+// 全局导入Treetable组件
+Vue.component('tree-table', Treetable)
 
 new Vue({
   router,
