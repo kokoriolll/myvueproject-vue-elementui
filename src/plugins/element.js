@@ -28,7 +28,8 @@ import {
     Icon,
     Tree,
     Select,
-    Option
+    Option,
+    Cascader
 } from 'element-ui'
 
 Vue.use(Row)
@@ -58,6 +59,7 @@ Vue.use(Icon)
 Vue.use(Tree)
 Vue.use(Select)
 Vue.use(Option)
+Vue.use(Cascader)
 
 // 导入弹框提示组件
 // 把消息提示组件挂载到了Vue原型上 用this.$message 访问
