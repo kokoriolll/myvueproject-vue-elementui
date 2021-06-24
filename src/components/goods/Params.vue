@@ -31,15 +31,60 @@
             <!-- tab页签区域 -->
             <el-tabs v-model="activeName" @tab-click="handleTabClick">
                 <!-- 添加动态参数的面板 -->
-                <el-tab-pane label="动态参数" name="first">
-                    <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加参数</el-button>
+                <el-tab-pane label="动态参数" name="many">
+                    <el-button type="primary" size="mini" @click="addDialogVisible = true" :disabled="isBtnDisabled">添加参数</el-button>
+                    <!-- 动态参数表格 -->
+                    <el-table :data="manyTableData" border stripe>
+                        <!-- 展开行 -->
+                        <el-table-column type="expand"></el-table-column>
+                        <!-- 索引列 -->
+                        <el-table-column type="index"></el-table-column>
+                        <el-table-column label="参数名称" prop="attr_name"></el-table-column>
+                        <el-table-column label="操作">
+                            <template slot-scope="scope">
+                                <el-button type="primary" size="mini" icon="el-icon-edit">编辑</el-button>
+                                <el-button type="danger" size="mini" icon="el-icon-delete">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
                 </el-tab-pane>
                 <!-- 添加静态属性的面板 -->
-                <el-tab-pane label="静态属性" name="second">
-                    <el-button type="primary" size="mini" :disabled="isBtnDisabled">添加属性</el-button>
+                <el-tab-pane label="静态属性" name="only">
+                    <el-button type="primary" size="mini" @click="addDialogVisible = true" :disabled="isBtnDisabled">添加属性</el-button>
+                    <!-- 静态属性表格 -->
+                    <el-table :data="onlyTableData" border stripe>
+                        <!-- 索引列 -->
+                        <el-table-column type="index"></el-table-column>
+                        <el-table-column label="属性名称" prop="attr_name"></el-table-column>
+                        <el-table-column label="操作">
+                            <template slot-scope="scope">
+                                <el-button type="primary" size="mini" icon="el-icon-edit">编辑</el-button>
+                                <el-button type="danger" size="mini" icon="el-icon-delete">删除</el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
                 </el-tab-pane>
             </el-tabs>
         </el-card>
+
+        <!-- 添加参数的对话框 -->
+        <el-dialog
+                :title="'添加' + titleText"
+                :visible.sync="addDialogVisible"
+                width="50%"
+                @close="addDialogClosed"
+                >
+            <!-- 添加参数的对话框 -->
+            <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="100px">
+                <el-form-item :label="titleText" prop="attr_name">
+                    <el-input v-model="addForm.attr_name"></el-input>
+                </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+    <el-button @click="addDialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="addParams">确 定</el-button>
+  </span>
+        </el-dialog>
     </div>
 </template>
 
@@ -53,7 +98,23 @@
                 // 级联选择框双向绑定的数组
                 selectedCateKeys: [],
                 // 被激活的页签的名称
-                activeName: 'first'
+                activeName: 'many',
+                // 动态参数的数据
+                manyTableData: [],
+                // 静态属性的数据
+                onlyTableData: [],
+                // 添加对话框的现实与隐藏
+                addDialogVisible: false,
+                // 添加参数的表单数据对象
+                addForm: {
+                    attr_name: ''
+                },
+                // 表单验证规则
+                addFormRules: {
+                    attr_name: [
+                        { required: true, message: '请输入活动名称', trigger: 'blur' }
+                    ]
+                }
             }
         },
         methods: {
@@ -71,10 +132,46 @@
                 if (this.selectedCateKeys.length !== 3) {
                     return this.selectedCateKeys = []
                 }
+                this.getParamsData();
             },
             // Tab页签点击事件的处理函数
             handleTabClick() {
-                console.log(this.activeName);
+                this.getParamsData();
+            },
+            async getParamsData() {
+                const {data:res} = await this.$http.get(`categories/${this.catID}/attributes`,{ params: { sel: this.activeName } })
+                if (res.meta.status !== 200) {
+                    return this.$message.error('获取数据失败')
+                }
+                console.log(res);
+                if (this.activeName === 'many') {
+                    this.manyTableData = res.data;
+                } else {
+                    this.onlyTableData = res.data
+                }
+            },
+            // 添加对话框关闭之后的事件
+            addDialogClosed() {
+                this.$refs.addFormRef.resetFields();
+            },
+            // 点击按钮添加参数
+            addParams() {
+                this.$refs.addFormRef.validate(async valid => {
+                    if (!valid) {
+                        return false;
+                    }
+                    const {data:res} = await this.$http.post(`categories/${this.catID}/attributes`, {
+                        attr_name: this.addForm.attr_name,
+                        attr_sel: this.activeName
+                    });
+                    if (res.meta.status !== 201) {
+                        return this.$message.error('添加参数失败')
+                    }
+                    this.$message.success('添加参数成功');
+                    this.addDialogVisible = false;
+                    this.$refs.addFormRef.resetFields();
+                    this.getParamsData()
+                })
             }
         },
         created() {
@@ -84,6 +181,21 @@
             // 如果按钮需要被禁用，返回True，否则返回False
             isBtnDisabled() {
                 return this.selectedCateKeys.length !== 3 ? true : false;
+            },
+            // 当前选中的三级分类的ID
+            catID() {
+                if (this.selectedCateKeys.length === 3) {
+                    return this.selectedCateKeys[2]
+                }
+                return null
+            },
+            // 动态计算标题的文本
+            titleText() {
+                if (this.activeName === 'many') {
+                    return '动态参数'
+                } else {
+                    return '静态属性'
+                }
             }
         }
     }
