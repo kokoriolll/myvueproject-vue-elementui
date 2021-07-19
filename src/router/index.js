@@ -7,7 +7,8 @@ import Users from "../components/user/Users";
 import Rights from "../components/power/Rights";
 import Roles from "../components/power/Roles";
 import Cate from "../components/goods/Cate";
-import Params from '../components/goods/Params'
+import Params from '../components/goods/Params';
+import GoodsList from "../components/goods/List";
 
 Vue.use(VueRouter)
 
@@ -68,6 +69,13 @@ const routes = [
         component: Params,
         meta: {
           title: '分类参数'
+        }
+      },
+      {
+        path: '/goods',
+        component: GoodsList,
+        meta: {
+          title: '商品列表'
         }
       }
     ]
