@@ -9,6 +9,7 @@ import Roles from "../components/power/Roles";
 import Cate from "../components/goods/Cate";
 import Params from '../components/goods/Params';
 import GoodsList from "../components/goods/List";
+import AddGoods from "../components/goods/add";
 
 Vue.use(VueRouter)
 
@@ -77,6 +78,10 @@ const routes = [
         meta: {
           title: '商品列表'
         }
+      },
+      {
+        path: '/goods/add',
+        component: AddGoods
       }
     ]
   }
