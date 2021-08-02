@@ -81,7 +81,10 @@ const routes = [
       },
       {
         path: '/goods/add',
-        component: AddGoods
+        component: AddGoods,
+          meta: {
+              title: '添加商品'
+          }
       }
     ]
   }

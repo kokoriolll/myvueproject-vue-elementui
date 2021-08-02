@@ -32,7 +32,9 @@ import {
     Cascader,
     Alert,
     Tabs,
-    TabPane
+    TabPane,
+    Steps,
+    Step
 } from 'element-ui'
 
 Vue.use(Row)
@@ -66,6 +68,8 @@ Vue.use(Cascader)
 Vue.use(Alert)
 Vue.use(Tabs)
 Vue.use(TabPane)
+Vue.use(Steps)
+Vue.use(Step)
 
 // 导入弹框提示组件
 // 把消息提示组件挂载到了Vue原型上 用this.$message 访问
