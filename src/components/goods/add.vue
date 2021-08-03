@@ -30,7 +30,7 @@
 
             <!-- tab栏区域 -->
             <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-position="top" label-width="100px">
-                <el-tabs v-model="activeIndex" :tab-position="'left'">
+                <el-tabs v-model="activeIndex" :tab-position="'left'" :before-leave="beforeTabLeave">
                     <el-tab-pane name="0" label="基本信息">
                         <el-form-item label="商品名称" prop="goods_name">
                             <el-input v-model="addForm.goods_name"/>
@@ -43,6 +43,14 @@
                         </el-form-item>
                         <el-form-item label="商品数量" prop="goods_number">
                             <el-input type="number" v-model="addForm.goods_number"/>
+                        </el-form-item>
+                        <el-form-item label="商品分类" prop="goods_cat">
+                            <el-cascader
+                                    v-model="addForm.goods_cat"
+                                    :options="cateList"
+                                    :props="{ expandTrigger: 'hover', value: 'cat_id', label: 'cat_name', children: 'children' }"
+                                    @change="handleChange"
+                                    clearable></el-cascader>
                         </el-form-item>
                     </el-tab-pane>
                     <el-tab-pane name="1" label="商品参数">商品参数</el-tab-pane>
@@ -66,7 +74,9 @@
                     goods_name: '',
                     goods_price: 0,
                     goods_weight: 0,
-                    goods_number: 0
+                    goods_number: 0,
+                    // 商品所属的分类数组
+                    goods_cat: []
                 },
                 // 添加商品表单的验证规则
                 addFormRules: {
@@ -81,15 +91,39 @@
                     ],
                     goods_number: [
                         { required: true, message: '请输入商品数量', trigger: 'blur' }
+                    ],
+                    goods_cat: [
+                        { required: true, message: '请选择商品分类', trigger: 'change' }
                     ]
-                }
+                },
+                // 商品分类列表
+                cateList: []
             }
         },
         methods: {
-            getCateList() {
-                this.$http.get('categories').then(res => {
-                    console.log(res);
-                }).catch().finally();
+            // 获取商品分类
+            async getCateList() {
+                const {data : res} = await this.$http.get('categories');
+                if (res.meta.status !== 200) {
+                    return this.$message.error('获取分类失败')
+                }
+                this.cateList = res.data;
+            },
+
+            // 级联选择器选择后的事件
+            handleChange() {
+                // 判断只能选择第三级的分类
+                if (this.addForm.goods_cat.length !== 3) {
+                    this.addForm.goods_cat = []
+                }
+            },
+
+            // Tab标签页切换的事件
+            beforeTabLeave(activeName, oldActiveName) {
+                if (oldActiveName === '0' && this.addForm.goods_cat.length !== 3) {
+                    this.$message.error('请选择商品分类');
+                    return false;
+                }
             }
         },
         created() {
