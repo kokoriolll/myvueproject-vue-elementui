@@ -30,7 +30,8 @@
 
             <!-- tab栏区域 -->
             <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-position="top" label-width="100px">
-                <el-tabs v-model="activeIndex" :tab-position="'left'" :before-leave="beforeTabLeave">
+                <el-tabs v-model="activeIndex" @tab-click="tabClicked" :tab-position="'left'" :before-leave="beforeTabLeave">
+                    <!-- 基本信息 -->
                     <el-tab-pane name="0" label="基本信息">
                         <el-form-item label="商品名称" prop="goods_name">
                             <el-input v-model="addForm.goods_name"/>
@@ -53,6 +54,7 @@
                                     clearable></el-cascader>
                         </el-form-item>
                     </el-tab-pane>
+                    <!-- 商品参数 -->
                     <el-tab-pane name="1" label="商品参数">商品参数</el-tab-pane>
                     <el-tab-pane name="2" label="商品属性">商品属性</el-tab-pane>
                     <el-tab-pane name="3" label="商品图片">商品图片</el-tab-pane>
@@ -97,7 +99,9 @@
                     ]
                 },
                 // 商品分类列表
-                cateList: []
+                cateList: [],
+                // 动态参数列表
+                manyTableData: []
             }
         },
         methods: {
@@ -124,6 +128,18 @@
                     this.$message.error('请选择商品分类');
                     return false;
                 }
+            },
+
+            async tabClicked() {
+                // 访问的是商品参数面板
+                if (this.activeIndex === '1') {
+                    const { data : res } = await this.$http.get(`categories/${this.cateID}/attributes`, {params: { sel: 'many' }})
+                    if (res.meta.status !== 200) {
+                        return this.$message.error('获取商品参数失败')
+                    }
+                    this.manyTableData = res.data;
+                    console.log(res);
+                }
             }
         },
         created() {
@@ -131,6 +147,16 @@
             this.getCateList()
         },
         watch: {
+        },
+        computed: {
+            cateID() {
+                // 判断是否选中三级分类并返回三级分类的ID
+                if (this.addForm.goods_cat.length === 3) {
+                    return this.addForm.goods_cat[2];
+                }
+                // 判断没有选中三级分类返回为空
+                return null;
+            }
         }
     }
 </script>
