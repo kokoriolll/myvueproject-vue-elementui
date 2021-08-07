@@ -55,13 +55,46 @@
                         </el-form-item>
                     </el-tab-pane>
                     <!-- 商品参数 -->
-                    <el-tab-pane name="1" label="商品参数">商品参数</el-tab-pane>
-                    <el-tab-pane name="2" label="商品属性">商品属性</el-tab-pane>
-                    <el-tab-pane name="3" label="商品图片">商品图片</el-tab-pane>
+                    <el-tab-pane name="1" label="商品参数">
+                        <el-form-item v-for="item in manyTableData" :key="item.attr_id" :label="item.attr_name">
+                            <!-- 复选框组 -->
+                            <el-checkbox-group v-model="item.attr_vals">
+                                <el-checkbox v-for="(cb, i) in item.attr_vals" :key="i" :label="cb" border></el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </el-tab-pane>
+                    <!-- 商品属性 -->
+                    <el-tab-pane name="2" label="商品属性">
+                        <el-form-item v-for="item in onlyTableData" :key="item.attr_id" :label="item.attr_name">
+                            <el-input v-model="item.attr_vals"/>
+                        </el-form-item>
+                    </el-tab-pane>
+                    <!-- 商品图片 -->
+                    <el-tab-pane name="3" label="商品图片">
+                        <!-- action 图片要上传到的后台API地址 -->
+                        <el-upload
+                                :action="uploadURL"
+                                :on-preview="handlePreview"
+                                :on-remove="handleRemove"
+                                :headers="headerObj"
+                                list-type="picture"
+                                :on-success="handleSuccess">
+                            <el-button size="small" type="primary">点击上传</el-button>
+                        </el-upload>
+                    </el-tab-pane>
                     <el-tab-pane name="4" label="商品内容">商品内容</el-tab-pane>
                 </el-tabs>
             </el-form>
         </el-card>
+        <!-- 图片预览 -->
+        <el-dialog
+                title="图片预览"
+                :visible.sync="previewVisible"
+                width="50%"
+                @close="previewClosed"
+                >
+            <img style="text-align: center" :src="previewPath">
+        </el-dialog>
     </div>
 </template>
 
@@ -78,7 +111,9 @@
                     goods_weight: 0,
                     goods_number: 0,
                     // 商品所属的分类数组
-                    goods_cat: []
+                    goods_cat: [],
+                    // 上传图片的临时目录
+                    pics: []
                 },
                 // 添加商品表单的验证规则
                 addFormRules: {
@@ -101,7 +136,20 @@
                 // 商品分类列表
                 cateList: [],
                 // 动态参数列表
-                manyTableData: []
+                manyTableData: [],
+                // 静态属性列表
+                onlyTableData: [],
+                // 上传图片的接口
+                uploadURL: 'http://timemeetyou.com:8889/api/private/v1/upload',
+                // 图片上传组件的请求头
+                headerObj: {
+                    Authorization: window.sessionStorage.getItem('token')
+                },
+                // 预览图片的临时路径
+                previewPath: '',
+                // 预览图片的对话框
+                previewVisible: false
+
             }
         },
         methods: {
@@ -137,9 +185,49 @@
                     if (res.meta.status !== 200) {
                         return this.$message.error('获取商品参数失败')
                     }
+                    res.data.forEach(item => {
+                        item.attr_vals = item.attr_vals.length === 0 ? [] : item.attr_vals.split(',');
+                    });
                     this.manyTableData = res.data;
-                    console.log(res);
+                };
+                // 访问的是商品属性面板
+                if (this.activeIndex === '2') {
+                    const { data : res } = await this.$http.get(`categories/${this.cateID}/attributes`, {params: { sel: 'only' }})
+                    if (res.meta.status !== 200) {
+                        return this.$message.error('获取商品属性失败')
+                    }
+                    console.log('商品属性', res);
+                    this.onlyTableData = res.data;
                 }
+            },
+            // 处理图片预览效果
+            handlePreview(file) {
+                this.previewPath = file.response.data.url;
+                this.previewVisible = true;
+            },
+            // 处理移除图片的操作
+            handleRemove(file) {
+                // 1.获取将要删除的图片临时路径
+                const filePath = file.response.data.tmp_path;
+                // 2.从pics数组中找到这个图片对应的索引值
+                const i = this.addForm.pics.findIndex(x => {
+                    x.pic === filePath
+                });
+                // 3.调用数组的splice方法，把图片信息对象从pics中删除
+                this.addForm.pics.splice(i, 1);
+            },
+            // 监听图片上传成功的事件
+            handleSuccess(response) {
+                console.log(response);
+                // 1.拼接得到一个图片的信息对象
+                const picInfo = { pic: response.data.tmp_path }
+                // 2.将图片信息对象push到pics数组中
+                this.addForm.pics.push(picInfo);
+                console.log('addForm', this.addForm);
+            },
+            // 关闭图片预览的窗口
+            previewClosed() {
+                this.previewPath = '';
             }
         },
         created() {
@@ -162,5 +250,7 @@
 </script>
 
 <style scoped>
-
+.el-checkbox {
+    margin: 0 5px 5px 0;
+}
 </style>

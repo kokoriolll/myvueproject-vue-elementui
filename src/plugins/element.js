@@ -34,7 +34,10 @@ import {
     Tabs,
     TabPane,
     Steps,
-    Step
+    Step,
+    Checkbox,
+    CheckboxGroup,
+    Upload
 } from 'element-ui'
 
 Vue.use(Row)
@@ -70,6 +73,9 @@ Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Steps)
 Vue.use(Step)
+Vue.use(Checkbox)
+Vue.use(CheckboxGroup)
+Vue.use(Upload)
 
 // 导入弹框提示组件
 // 把消息提示组件挂载到了Vue原型上 用this.$message 访问
