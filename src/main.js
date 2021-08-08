@@ -12,6 +12,12 @@ import './assets/fonts/iconfont.css'
 import './assets/css/global.css'
 // 导入vueTable组件
 import Treetable from 'vue-table-with-tree-grid'
+// 导入富文本编辑器和编辑器样式
+import VueQuillEditor from "vue-quill-editor";
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 // 配置请求的根路径
 axios.defaults.baseURL = 'http://timemeetyou.com:8889/api/private/v1/';
@@ -34,6 +40,9 @@ Vue.config.productionTip = false
 
 // 全局导入Treetable组件
 Vue.component('tree-table', Treetable)
+
+// 使用富文本编辑器
+Vue.use(VueQuillEditor)
 
 Vue.filter('dateFormat', function (originVal) {
     const dt = new Date(originVal);

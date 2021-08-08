@@ -82,7 +82,14 @@
                             <el-button size="small" type="primary">点击上传</el-button>
                         </el-upload>
                     </el-tab-pane>
-                    <el-tab-pane name="4" label="商品内容">商品内容</el-tab-pane>
+                    <!-- 商品内容 -->
+                    <el-tab-pane name="4" label="商品内容">
+                        <quill-editor v-model="addForm.goods_introduce"
+                                      ref="myQuillEditor">
+                        </quill-editor>
+                        <!-- 添加商品的按钮 -->
+                        <el-button class="btnAdd" type="primary" @click="add">添加商品</el-button>
+                    </el-tab-pane>
                 </el-tabs>
             </el-form>
         </el-card>
@@ -99,6 +106,7 @@
 </template>
 
 <script>
+    import _ from 'lodash';
     export default {
         name: "add",
         data() {
@@ -113,7 +121,11 @@
                     // 商品所属的分类数组
                     goods_cat: [],
                     // 上传图片的临时目录
-                    pics: []
+                    pics: [],
+                    // 商品内容部分
+                    goods_introduce: '',
+                    attrs: []
+
                 },
                 // 添加商品表单的验证规则
                 addFormRules: {
@@ -228,6 +240,40 @@
             // 关闭图片预览的窗口
             previewClosed() {
                 this.previewPath = '';
+            },
+            // 点击添加商品后的事件
+            add() {
+                this.$refs.addFormRef.validate(async valid => {
+                    if (!valid) {
+                        return this.$message.error('请填写必要的表单项');
+                    }
+                    // 执行添加的业务逻辑
+                    const form = _.cloneDeep(this.addForm);
+                    form.goods_cat = form.goods_cat.join(',');
+                    // 处理动态参数和静态属性
+                    this.manyTableData.forEach(item => {
+                        const newInfo = {
+                            attr_id: item.attr_id,
+                            attr_value: item.attr_vals.join(' ')
+                        };
+                        this.addForm.attrs.push(newInfo);
+                    });
+                    this.onlyTableData.forEach(item => {
+                        const newInfo = {
+                            attr_id: item.attr_id,
+                            attr_value: item.attr_vals
+                        };
+                        this.addForm.attrs.push(newInfo);
+                    });
+                    form.attrs = this.addForm.attrs;
+                    // 发起请求添加商品
+                    const {data : res} = await this.$http.post('goods', form)
+                    if(res.meta.status !== 201) {
+                        return this.$message.error('添加失败')
+                    }
+                    this.$message.success('添加成功');
+                    this.$router.push('/goods');
+                })
             }
         },
         created() {
@@ -252,5 +298,9 @@
 <style scoped>
 .el-checkbox {
     margin: 0 5px 5px 0;
+}
+
+.btnAdd {
+    margin-top: 15px;
 }
 </style>
